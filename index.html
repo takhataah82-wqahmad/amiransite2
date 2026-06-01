@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدرسه امیران</title>
+
+<style>
+:root{
+  --bg:#f2f6ff;
+  --text:#1a2a4a;
+  --card:#fff;
+  --primary:#0d3b8b;
+  --accent:#1e6bd8;
+  --shadow:rgba(0,0,0,.12)
+}
+[data-theme="dark"]{
+  --bg:#0b1020;
+  --text:#e9ecff;
+  --card:#121835;
+  --shadow:rgba(0,0,0,.4)
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:tahoma;
+  background:var(--bg);
+  color:var(--text)
+}
+header{
+  background:linear-gradient(90deg,#0d3b8b,#1e6bd8);
+  color:#fff;
+  padding:30px;
+  text-align:center;
+  position:relative
+}
+.theme-switch{
+  position:absolute;
+  left:20px;
+  top:20px;
+  padding:8px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer
+}
+.container{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 20px
+}
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 8px 22px var(--shadow)
+}
+.tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:15px
+}
+.tab{
+  padding:10px 14px;
+  border-radius:12px;
+  background:#eaf1ff;
+  cursor:pointer;
+  font-weight:bold
+}
+.tab.active{
+  background:var(--accent);
+  color:#fff
+}
+.tabContent{display:none}
+.tabContent.active{display:block}
+
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:12px;
+  border:1px solid #ccc
+}
+button.btn{
+  margin-top:10px;
+  padding:10px 18px;
+  border:none;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer
+}
+.list{margin-top:15px}
+.item{
+  background:#f5f5f5;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px
+}
+.delete-btn{
+  background:#d12a2a;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:6px 12px;
+  cursor:pointer
+}
+
+/* Leaderboard */
+.leader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  border-radius:14px;
+  background:linear-gradient(90deg,#fff7d6,#ffeaa7);
+  margin-bottom:10px;
+  font-weight:bold
+}
+.rank{width:40px;text-align:center;font-size:20px}
+.gold{color:#d4af37}
+.silver{color:#c0c0c0}
+.bronze{color:#cd7f32}
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  background:var(--primary);
+  color:#fff;
+  padding:12px 18px;
+  border-radius:14px;
+  display:none
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <button class="theme-switch" onclick="toggleTheme()">دارک / لایت</button>
+  <h1>مدرسه امیران</h1>
+  <p>سیستم واقعی مدرسه، نه دکوری</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('students')">دانش‌آموزان</div>
+  <div class="tab" onclick="switchTab('teachers')">معلم‌ها</div>
+  <div class="tab" onclick="switchTab('vote')">رای‌گیری</div>
+  <div class="tab" onclick="switchTab('leaderboard')">لیدربورد</div>
+  <div class="tab" onclick="switchTab('feedback')">پیشنهاد و انتقاد</div>
+</div>
+
+<!-- Students -->
+<div id="students" class="tabContent active">
+  <input id="studentName" placeholder="نام دانش‌آموز">
+  <select id="studentClass">
+    <option>7A</option><option>7B</option>
+    <option>8A</option><option>8B</option>
+    <option>9</option>
+  </select>
+  <button class="btn" onclick="addStudent()">ثبت</button>
+  <div class="list" id="studentList"></div>
+</div>
+
+<!-- Teachers -->
+<div id="teachers" class="tabContent">
+  <input id="teacherName" placeholder="نام معلم">
+  <input id="teacherSubject" placeholder="درس">
+  <button class="btn" onclick="addTeacher()">ثبت</button>
+  <div class="list" id="teacherList"></div>
+</div>
+
+<!-- Vote -->
+<div id="vote" class="tabContent">
+  <input id="voteName" placeholder="نام معلم">
+  <button class="btn" onclick="castVote()">ثبت رای</button>
+  <div class="list" id="voteResults"></div>
+</div>
+
+<!-- Leaderboard -->
+<div id="leaderboard" class="tabContent">
+  <div class="list" id="leaderboardList"></div>
+</div>
+
+<!-- Feedback -->
+<div id="feedback" class="tabContent">
+  <input id="fbName" placeholder="نام (اختیاری)">
+  <select id="fbType">
+    <option>پیشنهاد</option>
+    <option>انتقاد</option>
+  </select>
+  <textarea id="fbText" placeholder="متن پیام"></textarea>
+  <button class="btn" onclick="addFeedback()">ارسال</button>
+  <div class="list" id="feedbackList"></div>
+</div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const storage={
+  get:(k,d)=>JSON.parse(localStorage.getItem(k))||d,
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+}
+
+function toggleTheme(){
+  document.documentElement.toggleAttribute("data-theme")
+}
+function switchTab(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
+  document.querySelectorAll(".tabContent").forEach(c=>c.classList.remove("active"))
+  document.querySelector(`[onclick="switchTab('${id}')"]`).classList.add("active")
+  document.getElementById(id).classList.add("active")
+}
+function toast(msg){
+  const t=document.getElementById("toast")
+  t.innerText=msg
+  t.style.display="block"
+  setTimeout(()=>t.style.display="none",2000)
+}
+
+/* Students */
+function addStudent(){
+  const n=studentName.value.trim()
+  const c=studentClass.value
+  if(!n)return toast("اسم وارد کن")
+  const s=storage.get("students",[])
+  s.push({n,c})
+  storage.set("students",s)
+  studentName.value=""
+  renderStudents()
+}
+function renderStudents(){
+  const s=storage.get("students",[])
+  studentList.innerHTML=""
+  s.forEach((x,i)=>{
+    studentList.innerHTML+=`
+    <div class="item">
+      <span>${x.n} - ${x.c}</span>
+      <button class="delete-btn" onclick="delStudent(${i})">حذف</button>
+    </div>`
+  })
+}
+function delStudent(i){
+  const s=storage.get("students",[])
+  s.splice(i,1)
+  storage.set("students",s)
+  renderStudents()
+}
+
+/* Teachers */
+function addTeacher(){
+  const n=teacherName.value.trim()
+  const s=teacherSubject.value.trim()
+  if(!n||!s)return toast("ناقصه")
+  const t=storage.get("teachers",[])
+  t.push({n,s})
+  storage.set("teachers",t)
+  teacherName.value=teacherSubject.value=""
+  renderTeachers()
+}
+function renderTeachers(){
+  const t=storage.get("teachers",[])
+  teacherList.innerHTML=""
+  t.forEach((x,i)=>{
+    teacherList.innerHTML+=`
+    <div class="item">
+      <span>${x.n} - ${x.s}</span>
+      <button class="delete-btn" onclick="delTeacher(${i})">حذف</button>
+    </div>`
+  })
+}
+function delTeacher(i){
+  const t=storage.get("teachers",[])
+  t.splice(i,1)
+  storage.set("teachers",t)
+  renderTeachers()
+}
+
+/* Vote + Leaderboard */
+function castVote(){
+  const n=voteName.value.trim()
+  if(!n)return toast("اسم وارد کن")
+  const v=storage.get("votes",{})
+  v[n]=(v[n]||0)+1
+  storage.set("votes",v)
+  voteName.value=""
+  renderVotes()
+  renderLeaderboard()
+}
+function renderVotes(){
+  const v=storage.get("votes",{})
+  voteResults.innerHTML=""
+  Object.entries(v).forEach(([n,c])=>{
+    voteResults.innerHTML+=`<div class="item"><span>${n}</span><span>${c} رای</span></div>`
+  })
+}
+function renderLeaderboard(){
+  const v=storage.get("votes",{})
+  leaderboardList.innerHTML=""
+  Object.entries(v).sort((a,b)=>b[1]-a[1]).forEach(([n,c],i)=>{
+    const m=i==0?"🥇":i==1?"🥈":i==2?"🥉":i+1
+    leaderboardList.innerHTML+=`
+    <div class="leader">
+      <div class="rank">${m}</div>
+      <div>${n}</div>
+      <div>${c}</div>
+    </div>`
+  })
+}
+
+/* Feedback */
+function addFeedback(){
+  const name=fbName.value||"ناشناس"
+  const type=fbType.value
+  const text=fbText.value.trim()
+  if(!text)return toast("خالیه")
+  const f=storage.get("feedback",[])
+  f.push({name,type,text})
+  storage.set("feedback",f)
+  fbText.value=""
+  renderFeedback()
+}
+function renderFeedback(){
+  const f=storage.get("feedback",[])
+  feedbackList.innerHTML=""
+  f.forEach((x,i)=>{
+    feedbackList.innerHTML+=`
+    <div class="item">
+      <div><b>${x.type}</b> | ${x.name}<br>${x.text}</div>
+      <button class="delete-btn" onclick="delFb(${i})">حذف</button>
+    </div>`
+  })
+}
+function delFb(i){
+  const f=storage.get("feedback",[])
+  f.splice(i,1)
+  storage.set("feedback",f)
+  renderFeedback()
+}
+
+renderStudents()
+renderTeachers()
+renderVotes()
+renderLeaderboard()
+renderFeedback()
+</script>
+
+</body>
+</html>
